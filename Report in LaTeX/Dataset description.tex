@@ -1,0 +1,777 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    \usepackage{tabularx}
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{soul}      % strikethrough (\st) support for pandoc >= 3.0.0
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{Dataset description}
+    
+    
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@ges}{\let\PY@bf=\textbf\let\PY@it=\textit}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \section{Dataset Description Report}\label{dataset-description-report}
+
+\subsection{Group Members}\label{group-members}
+
+\begin{itemize}
+\tightlist
+\item
+  Ruslan Basyrov (12209898)
+\item
+  Iana Bembeeva (52017248)
+\item
+  Ekaterina Grigorashchenko (12432933)
+\end{itemize}
+
+\subsection{Introduction}\label{introduction}
+
+This report provides a detailed description of two datasets used for
+analysis: a weather dataset predicting rainfall and a salary dataset.
+Each dataset's characteristics, attributes, and significance are
+discussed.
+
+    \subsection{Dataset 1: Weather Observations
+Dataset}\label{dataset-1-weather-observations-dataset}
+\raggedright
+\subsubsection{Context}\label{context}
+
+The first dataset comprises daily weather observations collected over
+approximately ten years from various locations across Australia. This
+dataset enables the prediction of next-day rain, answering the crucial
+question of whether to carry an umbrella.
+\href{https://www.kaggle.com/datasets/jsphyg/weather-dataset-rattle-package}{Link
+to Kaggle}.
+
+\subsubsection{Characteristics}\label{characteristics}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Samples}: Approximately 10 years of daily observations (exact
+  count of samples may vary).
+\item
+  \textbf{Attributes}: 22 attributes, including both numerical and
+  categorical types.
+\end{itemize}
+
+\subsubsection{Attribute Types and Unique
+Values}\label{attribute-types-and-unique-values}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1626}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.0813}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1220}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.1301}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 8\tabcolsep) * \real{0.5041}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Attribute
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Type
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Unique Values
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Missing Values
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Description
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Date & Ordinal & 3436 & 0 & The date of observation. \\
+Location & Nominal & 49 & 0 & The name of the weather station
+location. \\
+MinTemp & Ratio & 389 & 1485 & Minimum temperature in degrees
+Celsius. \\
+MaxTemp & Ratio & 505 & 1261 & Maximum temperature in degrees
+Celsius. \\
+Rainfall & Ratio & 681 & 3261 & Amount of rainfall recorded for the day
+in mm. \\
+Evaporation & Ratio & 358 & 62790 & Class A pan evaporation (mm) in the
+24 hours to 9am. \\
+Sunshine & Ratio & 145 & 69835 & Number of hours of bright sunshine in
+the day. \\
+WindGustDir & Nominal & 16 & 10326 & Direction of the strongest wind
+gust in the last 24 hours. \\
+WindGustSpeed & Ratio & 67 & 10263 & Speed (km/h) of the strongest wind
+gust in the last 24 hours. \\
+WindDir9am & Nominal & 16 & 10566 & Direction of the wind at 9am. \\
+WindDir3pm & Nominal & 16 & 4228 & Direction of the wind at 3pm. \\
+WindSpeed9am & Ratio & 43 & 1767 & Wind speed (km/h) averaged over 10
+minutes prior to 9am. \\
+WindSpeed3pm & Ratio & 44 & 3062 & Wind speed (km/h) averaged over 10
+minutes prior to 3pm. \\
+Humidity9am & Ratio & 101 & 2654 & Humidity (percent) at 9am. \\
+Humidity3pm & Ratio & 101 & 4507 & Humidity (percent) at 3pm. \\
+Pressure9am & Ratio & 546 & 15065 & Atmospheric pressure (hPa) at
+9am. \\
+Pressure3pm & Ratio & 549 & 15028 & Atmospheric pressure (hPa) at
+3pm. \\
+Cloud9am & Ratio & 10 & 55888 & Fraction of sky obscured by cloud at 9am
+(in oktas). \\
+Cloud3pm & Ratio & 10 & 1767 & Fraction of sky obscured by cloud at 3pm
+(in oktas). \\
+Temp9am & Ratio & 441 & 3609 & Temperature (degrees C) at 9am. \\
+Temp3pm & Ratio & 502 & 1485 & Temperature (degrees C) at 3pm. \\
+RainToday & Nominal & 2 & 3261 & Yes if precipitation (mm) exceeds 1mm,
+otherwise No. \\
+RainTomorrow & Nominal & 2 & 3267 & Indicates whether it will rain
+tomorrow (Yes/No). \\
+\end{longtable}
+
+\subsubsection{Comments on Reformatting}\label{comments-on-reformatting}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Date}: Should be reformatted to \texttt{datetime} for better
+  handling in time series analysis.
+\end{itemize}
+
+\subsubsection{Target Attribute}\label{target-attribute}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{RainTomorrow}: This binary attribute indicates whether it will
+  rain the following day (Yes/No). It is crucial for predicting weather
+  patterns and making informed decisions.
+\end{itemize}
+
+\subsubsection{Importance of Dataset}\label{importance-of-dataset}
+
+Understanding the distribution of values in attributes helps in
+preprocessing steps, such as handling missing values and feature
+selection, to build accurate predictive models.
+ 
+            
+    
+    \centering{\begin{tabular}{llllll}
+\toprule
+ & 0 & 1 & 2 & 3 & 4 \\
+\midrule
+Date & 2008-12-01 & 2008-12-02 & 2008-12-03 & 2008-12-04 & 2008-12-05 \\
+Location & Albury & Albury & Albury & Albury & Albury \\
+MinTemp & 13.400000 & 7.400000 & 12.900000 & 9.200000 & 17.500000 \\
+MaxTemp & 22.900000 & 25.100000 & 25.700000 & 28.000000 & 32.300000 \\
+Rainfall & 0.600000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+Evaporation & NaN & NaN & NaN & NaN & NaN \\
+Sunshine & NaN & NaN & NaN & NaN & NaN \\
+WindGustDir & W & WNW & WSW & NE & W \\
+WindGustSpeed & 44.000000 & 44.000000 & 46.000000 & 24.000000 & 41.000000 \\
+WindDir9am & W & NNW & W & SE & ENE \\
+WindDir3pm & WNW & WSW & WSW & E & NW \\
+WindSpeed9am & 20.000000 & 4.000000 & 19.000000 & 11.000000 & 7.000000 \\
+WindSpeed3pm & 24.000000 & 22.000000 & 26.000000 & 9.000000 & 20.000000 \\
+Humidity9am & 71.000000 & 44.000000 & 38.000000 & 45.000000 & 82.000000 \\
+Humidity3pm & 22.000000 & 25.000000 & 30.000000 & 16.000000 & 33.000000 \\
+Pressure9am & 1007.700000 & 1010.600000 & 1007.600000 & 1017.600000 & 1010.800000 \\
+Pressure3pm & 1007.100000 & 1007.800000 & 1008.700000 & 1012.800000 & 1006.000000 \\
+Cloud9am & 8.000000 & NaN & NaN & NaN & 7.000000 \\
+Cloud3pm & NaN & NaN & 2.000000 & NaN & 8.000000 \\
+Temp9am & 16.900000 & 17.200000 & 21.000000 & 18.100000 & 17.800000 \\
+Temp3pm & 21.800000 & 24.300000 & 23.200000 & 26.500000 & 29.700000 \\
+RainToday & No & No & No & No & No \\
+RainTomorrow & No & No & No & No & No \\
+\bottomrule
+\end{tabular}
+}
+
+    
+
+    \subsubsection{Dataset visualizations}\label{dataset-visualizations}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Distribution of RainTomorrow} - understanding the balance
+  between classes
+\end{enumerate}
+
+    \begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  \textbf{Histograms of Numeric Attributes}
+\end{enumerate}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{Dataset description_files/Dataset description_7_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \subsection{Dataset 2: Employee Salary
+Dataset}\label{dataset-2-employee-salary-dataset}
+\raggedright
+\subsubsection{Context}\label{context}
+
+The second dataset provides annual salary information, including gross
+and overtime pay, for all active, permanent employees of Montgomery
+County, MD, for the calendar year 2016. This data is essential for
+analyzing salary distribution and identifying trends in employee
+compensation.
+\href{https://www.openml.org/search?type=data&id=42125&sort=runs&status=active}{Link
+to OpenML}
+
+\subsubsection{Characteristics}\label{characteristics}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Samples}: 9222 employee records
+\item
+  \textbf{Attributes}: 13 attributes with a mix of numeric and
+  categorical types.
+\end{itemize}
+
+\subsubsection{Attribute Types and Unique
+Values}\label{attribute-types-and-unique-values}
+
+\begin{tabularx}{\linewidth}{@{}
+    >{\raggedright\arraybackslash}p{5cm} % Attribute
+    >{\raggedright\arraybackslash}p{2cm} % Type
+    >{\raggedright\arraybackslash}p{1.5cm} % Unique Values
+    >{\raggedright\arraybackslash}X % Description (auto-expanding)
+    @{}}
+\toprule
+\textbf{Attribute} & \textbf{Type} & \textbf{Unique Values} & \textbf{Description} \\
+\midrule
+full\_name & Nominal & 9222 & Employee's full name. \\
+gender & Nominal & 2 & Employee's gender (F, M). \\
+current\_annual\_salary & Ratio & 3403 & Employee's current annual salary in USD. \\
+2016\_gross\_pay\_received & Ratio & 8977 & Total gross pay received in 2016. \\
+2016\_overtime\_pay & Ratio & 6176 & Total overtime pay received in 2016. \\
+department & Nominal & 37 & Department of the employee. \\
+department\_name & Nominal & 37 & Full name of the department. \\
+division & Nominal & 694 & Division of the employee within the department. \\
+assignment\_category & Nominal & 2 & Employment category (Fulltime-Regular, Parttime-Regular). \\
+employee\_position\_title & Nominal & 385 & Job title of the employee. \\
+underfilled\_job\_title & Nominal & 84 & Job title of the position being underfilled, if applicable. \\
+date\_first\_hired & Ordinal & 2264 & Date the employee was first hired. \\
+year\_first\_hired & Interval & 51 & Year the employee was first hired. \\
+\bottomrule
+\end{tabularx}
+
+\subsubsection{Target Attribute}\label{target-attribute}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{current\_annual\_salary}: The primary target attribute used
+  for salary analysis and modeling. Understanding its distribution is
+  crucial for various analyses, including equity and budgeting.
+\end{itemize}
+
+\subsubsection{Comments on Reformatting}\label{comments-on-reformatting}
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{date\_first\_hired}: Should be reformatted to
+  \texttt{datetime} for better handling in time analysis.
+\end{itemize}
+
+\subsubsection{Importance of Dataset}\label{importance-of-dataset}
+
+The distribution of numeric values in the salary dataset provides
+insight into compensation trends, while the categorical data (such as
+gender and department) allows for analyzing disparities and ensuring
+equitable pay practices.
+
+    
+\begin{table}[h]
+    \centering
+    \begin{tabular}{@{}p{5cm} p{3cm} p{3cm} p{3cm}@{}}
+    \toprule
+    \textbf{Attribute} & \textbf{Instance 1} & \textbf{Instance 2} & \textbf{Instance 3} \\
+    \midrule
+    full\_name & Aarhus, Pam J. & Aaron, David J. & Aaron, Marsha M. \\
+    gender & F & M & F \\
+    current\_annual\_salary & 69,222.18 & 97,392.47 & 104,717.28 \\
+    2016\_gross\_pay\_received & 71,225.98 & 103,088.48 & 107,000.24 \\
+    2016\_overtime\_pay & 416.1 & 3,326.19 & 1,353.32 \\
+    department & POL & POL & HHS \\
+    department\_name & Department of Police & Department of Police & Department of Health\ldots \\
+    division & MSB Information Mgmt\ldots & ISB Major Crimes Divi\ldots & Adult Protective and\ldots \\
+    assignment\_category & Fulltime-Regular & Fulltime-Regular & Fulltime-Regular \\
+    employee\_position\_title & Office Services Coord\ldots & Master Police Officer & Social Worker IV \\
+    underfilled\_job\_title & None & None & None \\
+    date\_first\_hired & 09/22/1986 & 09/12/1988 & 11/19/1989 \\
+    year\_first\_hired & 1986 & 1988 & 1989 \\
+    \bottomrule
+    \end{tabular}
+    \caption{Example of the Data Instance}
+    \label{tab:data_instance}
+    \end{table}
+
+    
+    \subsubsection{Dataset visualizations}\label{dataset-visualizations}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Distribution of Current Annual Salary} - analyzing salary
+  ranges and identifying any outliers
+\end{enumerate}
+
+    \begin{center}
+    \adjustimage{max size={0.75\linewidth}{0.75\paperheight}}{Dataset description_files/Dataset description_12_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.75\linewidth}{0.75\paperheight}}{Dataset description_files/Dataset description_13_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.75\linewidth}{0.75\paperheight}}{Dataset description_files/Dataset description_14_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.75\linewidth}{0.75\paperheight}}{Dataset description_files/Dataset description_15_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.75\linewidth}{0.75\paperheight}}{Dataset description_files/Dataset description_16_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.75\linewidth}{0.75\paperheight}}{Dataset description_files/Dataset description_17_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  \textbf{Histograms of Numeric Attributes}
+\end{enumerate}
+
+
+
+    \begin{center}
+    \adjustimage{max size={0.75\linewidth}{0.75\paperheight}}{Dataset description_files/Dataset description_19_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+    \begin{center}
+    \adjustimage{max size={0.75\linewidth}{0.75\paperheight}}{Dataset description_files/Dataset description_20_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+
+    \begin{center}
+    \adjustimage{max size={0.75\linewidth}{0.75\paperheight}}{Dataset description_files/Dataset description_21_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+
+\subsubsection{Conclusion}\label{conclusion}
+
+Both datasets offer valuable insights into weather prediction and
+employee compensation. By understanding their characteristics,
+distributions, and the significance of attributes, we can apply
+appropriate data preprocessing techniques and build effective predictive
+models.
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
